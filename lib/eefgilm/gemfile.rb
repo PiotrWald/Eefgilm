@@ -1,5 +1,8 @@
 module Eefgilm
   class Gemfile
+    GITHUB_AS_GIT_SOURCE =
+      'git_source(:github) { |repo| "https://github.com/#{repo}.git" }'.freeze
+
     attr_accessor :path, :source, :groups, :rubyversion
 
     def initialize(path = '.', options = {})
@@ -76,7 +79,7 @@ module Eefgilm
 
     def recreate_file
       output = File.open("#{@path}/Gemfile", 'w+')
-      output.puts [@source, @rubyversion].compact
+      output.puts [@source, GITHUB_AS_GIT_SOURCE, "\n", @rubyversion].compact
       output.puts
 
       @groups.each do |group, gems|
