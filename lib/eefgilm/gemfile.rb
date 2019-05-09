@@ -1,7 +1,7 @@
 module Eefgilm
   class Gemfile
     GITHUB_AS_GIT_SOURCE =
-      'git_source(:github) { |repo| "https://github.com/#{repo}.git" }'.freeze
+      'git_source(:github) { |r| "https://github.com/#{r}.git" }'.freeze
 
     attr_accessor :path, :source, :groups, :rubyversion
 
@@ -79,9 +79,21 @@ module Eefgilm
 
     def recreate_file
       output = File.open("#{@path}/Gemfile", 'w+')
-      output.puts [@source, GITHUB_AS_GIT_SOURCE, "\n", @rubyversion].compact
-      output.puts
 
+      put_headers(output)
+
+      put_gems(output)
+
+      output.close
+    end
+
+    def put_headers(output)
+      output.puts @rubyversion, "\n"
+      output.puts @source, "\n"
+      output.puts GITHUB_AS_GIT_SOURCE, "\n"
+    end
+
+    def put_gems(output)
       @groups.each do |group, gems|
         if group == :all
           gems.each do |g|
@@ -94,11 +106,10 @@ module Eefgilm
           gems.each do |g|
             output.puts "  #{g}"
           end
+
           output.puts 'end'
         end
       end
-
-      output.close
     end
 
     def alphabetize_gems!
